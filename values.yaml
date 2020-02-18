@@ -16,3 +16,4 @@ operator:
     caCrt:
     tlsCrt:
     tlsKey:
+deployPDA: false
