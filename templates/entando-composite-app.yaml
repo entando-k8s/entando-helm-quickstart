@@ -1,3 +1,13 @@
+---
+kind: Secret
+apiVersion: "v1"
+metadata:
+  name: "{{ .Values.app.name }}-db-admin-secret"
+  namespace: {{ .Release.Namespace }}
+stringData:
+  username: "{{ .Values.db.adminUser }}"
+  password: "{{ .Values.db.adminPassword }}"
+---
 kind: "EntandoCompositeApp"
 apiVersion: "entando.org/v1"
 metadata:
@@ -8,18 +18,29 @@ entandoStatus:
   entandoDeploymentPhase: "requested"
 spec:
   components:
+    - kind: "EntandoDatabaseService"
+      metadata:
+        annotations: {}
+        labels: {}
+        name: "{{ .Values.app.name }}-ds"
+      spec:
+        dbms: "{{ .Values.db.vendor }}"
+        host: "{{ .Values.db.host }}"
+        port: "{{ .Values.db.port }}"
+        databaseName: "{{ .Values.db.name }}"
+        secretName: "{{ .Values.app.name }}-db-admin-secret"
+        jdbcParameters: {}
     - kind: "EntandoKeycloakServer"
       metadata:
         name: "{{ .Values.app.name }}-kc"
       spec:
-        dbms: none
+        dbms: {{ .Values.db.vendor }}
         isDefault: true
         replicas: 1
     - kind: "EntandoClusterInfrastructure"
       metadata:
         name: "{{ .Values.app.name }}-eci"
       spec:
-        dbms: postgresql
         replicas: 1
         isDefault: true
     - kind: "EntandoApp"
@@ -28,7 +49,7 @@ spec:
         labels: {}
         name: "{{ .Values.app.name }}"
       spec:
-        dbms: postgresql
+        dbms: {{ .Values.db.vendor }}
         replicas: 1
         standardServerImage: wildfly
         ingressPath: /entando-de-app
