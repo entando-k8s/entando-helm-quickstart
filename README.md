@@ -2,6 +2,14 @@
 
 This quickstart uses Entando's standard Wildfly image.
 
+# Prerequisites
+
+  - You have installed either the Openshift client oc or the Kubernetes client kubectl locally
+  - You have access to an Openshift or Kubernetes cluster, with a sandbox namespace/project you have admin access to. In subsequent instructions we will refer to this namespace as '[your-sandbox-namespace]'
+  - The Entando K8S Custom Resource Definitions have been registered on your Kubernetes Cluster. For more information, you can consult these [instructions](https://github.com/entando-k8s/entando-k8s-custom-model/blob/master/src/main/resources/crd/README.md).
+  - You have installed Helm, ideally the Helm 2 client without Tiller
+
+
 # Steps to deploy to Openshift/Kubernetes
 
 In the values.yaml file you need to update the configuration for your environment and deployment.
@@ -16,5 +24,5 @@ helm dependency update .
 ```
 6. Process the template and deploy the output using your favorite Kubernetes client, e.g:
 ```
-helm template --name=my-app  --namespace=my-namespace ./ | kubectl create -f -
+helm template --name=my-app  --namespace=[your-sandbox-namespace] ./ | kubectl create -f -
 ```
