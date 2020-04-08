@@ -47,6 +47,20 @@ spec:
           code: "task-list"
         - name: "task-get"
           code: "task-get"
+        - name: "task-claim";
+          code: "task-claim";
+        - name: "task-unclaim";
+          code: "task-unclaim";
+        - name: "task-assign";
+          code: "task-assign";
+        - name: "task-start";
+          code: "task-start";
+        - name: "task-pause";
+          code: "task-pause";
+        - name: "task-resume";
+          code: "task-resume";
+        - name: "task-complete";
+          code: "task-complete";
         - name: "task-definition-columns-list"
           code: "task-definition-columns-list"
         - name: "task-comments-list"
@@ -57,6 +71,16 @@ spec:
           code: "task-comments-create"
         - name: "task-comments-delete"
           code: "task-comments-delete"
+        - name: "task-attachments-list";
+          code: "task-attachments-list";
+        - name: "task-attachments-get";
+          code: "task-attachments-get";
+        - name: "task-attachments-create";
+          code: "task-attachments-create";
+        - name: "task-attachments-delete";
+          code: "task-attachments-delete";
+        - name: "task-attachments-download";
+          code: "task-attachments-download";
         - name: "task-form-get"
           code: "task-form-get"
         - name: "task-form-submit"
