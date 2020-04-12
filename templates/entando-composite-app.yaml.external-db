@@ -1,0 +1,125 @@
+---
+kind: Secret
+apiVersion: "v1"
+metadata:
+  name: "{{ .Values.app.name }}-db-admin-secret"
+  namespace: {{ .Release.Namespace }}
+stringData:
+  username: "{{ .Values.db.adminUser }}"
+  password: "{{ .Values.db.adminPassword }}"
+---
+kind: "EntandoCompositeApp"
+apiVersion: "entando.org/v1"
+metadata:
+  name: "{{ .Values.app.name }}-composite-app"
+  namespace: {{ .Release.Namespace }}
+entandoStatus:
+  serverStatuses: {}
+  entandoDeploymentPhase: "requested"
+spec:
+  components:
+    - kind: "EntandoDatabaseService"
+      metadata:
+        annotations: {}
+        labels: {}
+        name: "{{ .Values.app.name }}-ds"
+      spec:
+        dbms: "{{ .Values.db.vendor }}"
+        host: "{{ .Values.db.host }}"
+        port: "{{ .Values.db.port }}"
+        databaseName: "{{ .Values.db.name }}"
+        secretName: "{{ .Values.app.name }}-db-admin-secret"
+        jdbcParameters: {}
+    - kind: "EntandoKeycloakServer"
+      metadata:
+        name: "{{ .Values.app.name }}-kc"
+      spec:
+        dbms: {{ .Values.db.vendor }}
+        isDefault: true
+        replicas: 1
+    - kind: "EntandoClusterInfrastructure"
+      metadata:
+        name: "{{ .Values.app.name }}-eci"
+      spec:
+        replicas: 1
+        isDefault: true
+    - kind: "EntandoApp"
+      metadata:
+        annotations: {}
+        labels: {}
+        name: "{{ .Values.app.name }}"
+      spec:
+        dbms: {{ .Values.db.vendor }}
+        replicas: 1
+        standardServerImage: wildfly
+        ingressPath: /entando-de-app
+    {{- if .Values.deployPDA }}
+        customServerImage: "docker.io/entando/entando-pam-app-wildfly:latest"
+
+    - kind: "EntandoPlugin"
+      metadata:
+        name: "{{ .Values.app.name }}-pda"
+      spec:
+        image: "docker.io/entando/entando-process-driven-plugin:latest"
+        replicas: 1
+        dbms: "mysql"
+        roles:
+        - name: "task-list"
+          code: "task-list"
+        - name: "task-get"
+          code: "task-get"
+        - name: "task-definition-columns-list"
+          code: "task-definition-columns-list"
+        - name: "task-comments-list"
+          code: "task-comments-list"
+        - name: "task-comments-get"
+          code: "task-comments-get"
+        - name: "task-comments-create"
+          code: "task-comments-create"
+        - name: "task-comments-delete"
+          code: "task-comments-delete"
+        - name: "task-form-get"
+          code: "task-form-get"
+        - name: "task-form-submit"
+          code: "task-form-submit"
+        - name: "connection-list"
+          code: "connection-list"
+        - name: "connection-get"
+          code: "connection-get"
+        - name: "connection-create"
+          code: "connection-create"
+        - name: "connection-edit"
+          code: "connection-edit"
+        - name: "connection-delete"
+          code: "connection-delete"
+        - name: "process-definition-list"
+          code: "process-definition-list"
+        - name: "process-diagram"
+          code: "process-diagram"
+        - name: "process-definition-form-get"
+          code: "process-definition-form-get"
+        - name: "process-definition-form-submit"
+          code: "process-definition-form-submit"
+        - name: "group-list"
+          code: "group-list"
+        - name: "summary-data-repository-list"
+          code: "summary-data-repository-list"
+        - name: "summary-type-list"
+          code: "summary-type-list"
+        - name: "summary-get"
+          code: "summary-get"
+        permissions: []
+        parameters: {}
+        ingressPath: "/pda"
+        healthCheckPath: "/actuator/health"
+        securityLevel: lenient
+        connectionConfigNames: []
+    - kind: "EntandoAppPluginLink"
+      metadata:
+        name: "{{ .Values.app.name }}-pda-apl"
+      spec:
+        entandoAppNamespace: "{{ .Release.Namespace }}"
+        entandoAppName: "{{ .Values.app.name }}"
+        entandoPluginNamespace: "{{ .Release.Namespace }}"
+        entandoPluginName: "{{ .Values.app.name }}-pda"
+    {{- end }}
