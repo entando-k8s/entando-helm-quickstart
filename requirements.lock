@@ -1,6 +1,6 @@
 dependencies:
 - name: entando-k8s-controller-coordinator
   repository: https://chartmuseum-jx.apps.serv.run
-  version: 6.0.79
-digest: sha256:21236f969c242ed22410d4b51cb37e6bf870f323e8c99a4a0eacabef28715958
-generated: "2020-05-07T13:37:26.705735083+02:00"
+  version: 6.0.81
+digest: sha256:d85309cdd6a21a7edcd7f27049e447c23253c6537b045b40b82e393d26c0e612
+generated: "2020-05-21T15:26:51.798438+02:00"
