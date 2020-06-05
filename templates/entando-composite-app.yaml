@@ -12,14 +12,14 @@ spec:
       metadata:
         name: "{{ .Values.app.name }}-kc"
       spec:
-        dbms: none
+        dbms: {{ .Values.app.dbms | default "none" }}
         isDefault: true
         replicas: 1
     - kind: "EntandoClusterInfrastructure"
       metadata:
         name: "{{ .Values.app.name }}-eci"
       spec:
-        dbms: postgresql
+        dbms: {{ .Values.app.dbms | default "none" }}
         replicas: 1
         isDefault: true
     - kind: "EntandoApp"
@@ -28,7 +28,7 @@ spec:
         labels: {}
         name: "{{ .Values.app.name }}"
       spec:
-        dbms: postgresql
+        dbms: {{ .Values.app.dbms | default "none" }}
         replicas: 1
         standardServerImage: wildfly
         ingressPath: /entando-de-app
