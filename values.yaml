@@ -1,5 +1,6 @@
 app:
   name: quickstart
+  dbms: none
 operator:
   supportOpenshift: true
   env:
