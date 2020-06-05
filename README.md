@@ -39,5 +39,3 @@ helm template --name=my-app  --namespace=[your-sandbox-namespace] ./ > generated
 ```
 kubectl create -f generated-template.yml
 ```
-
-If H2 is choosen each interested container requires a [PVC](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) mounted on path `/opt/jboss/keycloak/standalone/data/`
