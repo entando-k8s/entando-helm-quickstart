@@ -28,7 +28,7 @@ helm dependency update .
 helm template --name=my-app  --namespace=[your-sandbox-namespace] ./ | kubectl create -f -
 ```
 
-If desired you can apply a more granular approach regarding used DBMSs for the Composite App components. In such a casa you can follow all previous step except the 7 and proceed as follows:
+If desired you can apply a more granular approach regarding used DBMSs for the Composite App components. In such a case you can follow all the previous step except the 7 and proceed as follows:
 
 7. Process the template:
 ```
