@@ -16,8 +16,9 @@ This quickstart uses Entando's standard Wildfly image.
 
     - If you are deploying in Openshift, set the operator.supportOpenshift = true , otherwise set it to `false`
     - Set `ENTANDO_DEFAULT_ROUTING_SUFFIX` to the value that matches the env you're going to deploy to. For local clusters (MicroK8S, Minikube) that would be your local IP address with the suffix `nip.io`, e.g. `192.168.1.9.nip.io`. On a shared cluster you may need to consult your cluster admin.
-   - If you want to deploy the Process Driven Applications Plugin (PDA), set `deployPDA = true`, otherwise leave it as false
+    - If you want to deploy the Process Driven Applications Plugin (PDA), set `deployPDA = true`, otherwise leave it as false
     - Embedded databases are used by default for the Entando Composite App - i.e. EntandoKeycloakServer, EntandoClusterInfrastructure and EntandoApp; if you want to switch to another DMBS you can change the property `app.dbms`. Accepted values are: `none` (default), `postgresql`, `mysql`, `oracle`,
+    - If you want to impose limits on the minimum/maximum requested resources you can set to `true` the `ENTANDO_K8S_OPERATOR_IMPOSE_DEFAULT_LIMITS`. You can find more info [here](https://dev.entando.org/docs/getting-started/#add-custom-resources).
 
 2. Ensure you have namespace in the cluster you can use, and the current user has admin permissions on the namespace.
 3. Make sure the dependency have been uploaded and are up-to-date
