@@ -8,6 +8,17 @@ entandoStatus:
   entandoDeploymentPhase: "requested"
 spec:
   components:
+    {{- if .Values.externalDatabase }}
+    - kind: "EntandoDatabaseService"
+      metadata:
+        name: "{{ .Values.app.name }}-ds"
+      spec:
+        dbms: {{ .Values.app.dbms }}
+        databaseName: "{{ .Values.externalDatabase.databaseName }}"
+        host: "{{ .Values.externalDatabase.host }}"
+        port: "{{ .Values.externalDatabase.port }}"
+        secretName: "{{ .Values.app.name }}-db-admin-secret"
+    {{- end }}
     - kind: "EntandoKeycloakServer"
       metadata:
         name: "{{ .Values.app.name }}-kc"
