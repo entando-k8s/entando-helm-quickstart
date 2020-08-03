@@ -1,6 +1,12 @@
 app:
   name: quickstart
   dbms: none
+#externalDatabase:
+#  host: openshift.serv.run
+#  port: 32432
+#  databaseName: sampledb
+#  username:
+#  password:
 operator:
   supportOpenshift: true
   env:
@@ -12,6 +18,7 @@ operator:
     ENTANDO_POD_COMPLETION_TIMEOUT_SECONDS: "1000"
     ENTANDO_DISABLE_KEYCLOAK_SSL_REQUIREMENT: "true"
     ENTANDO_K8S_OPERATOR_IMPOSE_DEFAULT_LIMITS: "false"
+    ENTANDO_K8S_OPERATOR_FORCE_DB_PASSWORD_RESET: "true"
   tls:
     caCrt:
     tlsCrt:
