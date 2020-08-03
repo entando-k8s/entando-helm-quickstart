@@ -1,17 +1,24 @@
 app:
   name: quickstart
   dbms: none
+#externalDatabase:
+#  host: openshift.serv.run
+#  port: 32432
+#  databaseName: sampledb
+#  username:
+#  password:
 operator:
   supportOpenshift: true
   env:
     ENTANDO_DOCKER_IMAGE_VERSION_FALLBACK: 6.0.0
     #ENTANDO_DOCKER_REGISTRY_OVERRIDE: docker.io # Remove comment if you want to always use a specific docker registry
     #ENTANDO_DOCKER_IMAGE_ORG_OVERRIDE: entando # Remove the comment if you want to always use a specific docker organization
-    ENTANDO_DEFAULT_ROUTING_SUFFIX: your.domain.suffix.com
+    ENTANDO_DEFAULT_ROUTING_SUFFIX: apps.serv.run
     ENTANDO_POD_READINESS_TIMEOUT_SECONDS: "1000"
     ENTANDO_POD_COMPLETION_TIMEOUT_SECONDS: "1000"
     ENTANDO_DISABLE_KEYCLOAK_SSL_REQUIREMENT: "true"
     ENTANDO_K8S_OPERATOR_IMPOSE_DEFAULT_LIMITS: "false"
+    ENTANDO_K8S_OPERATOR_FORCE_DB_PASSWORD_RESET: "true"
   tls:
     caCrt:
     tlsCrt:
