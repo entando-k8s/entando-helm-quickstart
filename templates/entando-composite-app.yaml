@@ -43,6 +43,8 @@ spec:
         replicas: 1
         standardServerImage: wildfly
         ingressPath: /entando-de-app
+        parameters:
+          SPRING_PROFILES_ACTIVE: "default,swagger"
     {{- if .Values.deployPDA }}
         customServerImage: "docker.io/entando/entando-pam-app-wildfly:latest"
 
