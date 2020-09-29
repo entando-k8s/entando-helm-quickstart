@@ -26,6 +26,9 @@ spec:
         dbms: {{ .Values.app.dbms | default "none" }}
         isDefault: true
         replicas: 1
+    {{- if .Values.app.singleHostName }}
+        ingressHostName: {{ .Values.app.singleHostName }}
+    {{- end}}
     - kind: "EntandoClusterInfrastructure"
       metadata:
         name: "{{ .Values.app.name }}-eci"
@@ -33,6 +36,9 @@ spec:
         dbms: {{ .Values.app.dbms | default "none" }}
         replicas: 1
         isDefault: true
+    {{- if .Values.app.singleHostName }}
+        ingressHostName: {{ .Values.app.singleHostName }}
+    {{- end}}
     - kind: "EntandoApp"
       metadata:
         annotations: {}
@@ -43,6 +49,9 @@ spec:
         replicas: 1
         standardServerImage: wildfly
         ingressPath: /entando-de-app
+    {{- if .Values.app.singleHostName }}
+        ingressHostName: {{ .Values.app.singleHostName }}
+    {{- end}}
     {{- if .Values.deployPDA }}
         customServerImage: "docker.io/entando/entando-pam-app-wildfly:latest"
 
@@ -127,6 +136,9 @@ spec:
         permissions: []
         parameters: {}
         ingressPath: "/pda"
+    {{- if .Values.app.singleHostName }}
+        ingressHostName: {{ .Values.app.singleHostName }}
+    {{- end}}
         healthCheckPath: "/actuator/health"
         securityLevel: lenient
         connectionConfigNames: []

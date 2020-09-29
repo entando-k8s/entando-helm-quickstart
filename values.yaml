@@ -1,6 +1,7 @@
 app:
   name: quickstart
   dbms: none
+#  singleHostName:  your-hostname
 #externalDatabase:
 #  host: openshift.serv.run
 #  port: 32432
@@ -13,7 +14,7 @@ operator:
     ENTANDO_DOCKER_IMAGE_VERSION_FALLBACK: 6.0.0
     #ENTANDO_DOCKER_REGISTRY_OVERRIDE: docker.io # Remove comment if you want to always use a specific docker registry
     #ENTANDO_DOCKER_IMAGE_ORG_OVERRIDE: entando # Remove the comment if you want to always use a specific docker organization
-    ENTANDO_DEFAULT_ROUTING_SUFFIX: apps.serv.run
+    ENTANDO_DEFAULT_ROUTING_SUFFIX: your.domain.suffix.com
     ENTANDO_POD_READINESS_TIMEOUT_SECONDS: "1000"
     ENTANDO_POD_COMPLETION_TIMEOUT_SECONDS: "1000"
     ENTANDO_DISABLE_KEYCLOAK_SSL_REQUIREMENT: "true"
