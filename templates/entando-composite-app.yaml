@@ -52,6 +52,8 @@ spec:
     {{- if .Values.app.singleHostName }}
         ingressHostName: {{ .Values.app.singleHostName }}
     {{- end}}
+        parameters:
+          SPRING_PROFILES_ACTIVE: "default,swagger"
     {{- if .Values.deployPDA }}
         customServerImage: "docker.io/entando/entando-pam-app-wildfly:latest"
 
