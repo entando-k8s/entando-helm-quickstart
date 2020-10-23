@@ -1,6 +1,7 @@
 app:
   name: quickstart
   dbms: none
+#  singleHostName:  your-hostname
 #externalDatabase:
 #  host: openshift.serv.run
 #  port: 32432
@@ -19,6 +20,8 @@ operator:
     ENTANDO_DISABLE_KEYCLOAK_SSL_REQUIREMENT: "true"
     ENTANDO_K8S_OPERATOR_IMPOSE_DEFAULT_LIMITS: "false"
     ENTANDO_K8S_OPERATOR_FORCE_DB_PASSWORD_RESET: "true"
+    ENTANDO_K8S_OPERATOR_DISABLE_PVC_GARBAGE_COLLECTION: "false"
+    ENTANDO_ASSUME_EXTERNAL_HTTPS_PROVIDER: "false"
   tls:
     caCrt:
     tlsCrt:
