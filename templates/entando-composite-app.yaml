@@ -8,22 +8,26 @@ entandoStatus:
   entandoDeploymentPhase: "requested"
 spec:
   components:
-    {{- if .Values.externalDatabase }}
+    {{- if .Values.sharedDatabaseService }}
     - kind: "EntandoDatabaseService"
       metadata:
         name: "{{ .Values.app.name }}-ds"
       spec:
         dbms: {{ .Values.app.dbms }}
-        databaseName: "{{ .Values.externalDatabase.databaseName }}"
-        host: "{{ .Values.externalDatabase.host }}"
-        port: "{{ .Values.externalDatabase.port }}"
+    {{- if .Values.sharedDatabaseService.createDeployment }}
+        createDeployment: true
+    {{- else }}
+        databaseName: "{{ .Values.sharedDatabaseService.databaseName }}"
+        host: "{{ .Values.sharedDatabaseService.host }}"
+        port: "{{ .Values.sharedDatabaseService.port }}"
         secretName: "{{ .Values.app.name }}-db-admin-secret"
+    {{- end }}
     {{- end }}
     - kind: "EntandoKeycloakServer"
       metadata:
         name: "{{ .Values.app.name }}-kc"
       spec:
-        dbms: {{ .Values.app.dbms | default "none" }}
+        dbms: {{ .Values.app.dbms | default "embedded" }}
         isDefault: true
         replicas: 1
     {{- if .Values.app.singleHostName }}
@@ -33,7 +37,7 @@ spec:
       metadata:
         name: "{{ .Values.app.name }}-eci"
       spec:
-        dbms: {{ .Values.app.dbms | default "none" }}
+        dbms: {{ .Values.app.dbms | default "embedded" }}
         replicas: 1
         isDefault: true
     {{- if .Values.app.singleHostName }}
@@ -45,9 +49,9 @@ spec:
         labels: {}
         name: "{{ .Values.app.name }}"
       spec:
-        dbms: {{ .Values.app.dbms | default "none" }}
+        dbms: {{ .Values.app.dbms | default "embedded" }}
         replicas: 1
-        standardServerImage: wildfly
+        standardServerImage: {{ .Values.app.jeeServer  | default "wildfly"  }}
         ingressPath: /entando-de-app
     {{- if .Values.app.singleHostName }}
         ingressHostName: {{ .Values.app.singleHostName }}
