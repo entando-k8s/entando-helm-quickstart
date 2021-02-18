@@ -1,10 +1,10 @@
 app:
   name: quickstart
-  dbms: embedded
+  dbms: mysql
   jeeServer: wildfly
 #  singleHostName:  your-hostname
-#sharedDatabaseService:
-#  createDeployment: true
+sharedDatabaseService:
+  createDeployment: true
 #  host: openshift.serv.run
 #  port: 32432
 #  databaseName: sampledb
@@ -26,6 +26,7 @@ operator:
     RELATED_IMAGE_ENTANDO_K8S_APP_CONTROLLER: entando/entando-k8s-app-controller@sha256:40fecb462867ed3a783d16e60870ca2645345bb4edfb0705034c974f5fc0beab
     RELATED_IMAGE_ENTANDO_DE_APP_EAP: entando/entando-de-app-eap@sha256:627c3708fc042d6887db43ff8aa23b959031fe1cf8847535c54fb5aa671d5f4d
     RELATED_IMAGE_ENTANDO_DE_APP_WILDFLY: entando/entando-de-app-wildfly@sha256:0221a3ca1038e147373eef4a739ad3295c6c79a19d6df47e9804d7aa69cd768a
+    RELATED_IMAGE_ENTANDO_COMPONENT_MANAGER: entando/entando-component-manager@sha256:79adfd945e95e52861ce64b7f13081e5542e141119ba5a47e145b924f082cfa3
   tls:
 # Create these secrets for TLS configuration
 #    tlsSecretName: test-tls-secret
