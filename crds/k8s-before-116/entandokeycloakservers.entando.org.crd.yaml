@@ -1,0 +1,263 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: entandokeycloakservers.entando.org
+spec:
+  group: entando.org
+  versions:
+    - name: v1
+      served: true
+      storage: true
+  subresources:
+    status: {}
+  additionalPrinterColumns:
+    - name: Phase
+      type: string
+      JSONPath: .status.entandoDeploymentPhase
+    - name: Observed Generation
+      type: number
+      JSONPath: .status.observedGeneration
+    - name: Age
+      type: date
+      JSONPath: .metadata.creationTimestamp
+    - name: Host
+      type: string
+      JSONPath: .spec.ingressHostName
+    - name: Image
+      type: string
+      JSONPath: .spec.standardImage
+    - name: DBMS
+      type: string
+      JSONPath: .spec.dbms
+    - name: Replicas
+      type: integer
+      JSONPath: .spec.replicas
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          type: object
+          properties:
+            replicas:
+              description: >-
+                The number of pods that should participate in the cluster of
+                Keycloak servers.
+              type: integer
+              minimum: 1
+              maximum: 10
+            dbms:
+              description: >
+                The database management system (DBMS) to use for persistence
+                of this Keycloak server. Can be any of mysql, oracle
+                postgresql or embedded.
+
+                 Only 1 replica of the container is supported if embedded is selected. If
+                 Oracle is selected it must be created manually, the operator does not deploy Oracle instances.
+                 See [here](https://dev.entando.org/v6.3/docs/concepts/operator-intro.html#database-deployment) for how the operator will create and configure the DBMS.
+              type: string
+              pattern: ^(mysql|oracle|postgresql|embedded|none)$
+            storageClass:
+              description: >
+                The name of the StorageClass to use for PersistentVolumeClaims created for this EntandoKeycloakServer
+              type: string
+            ingressHostName:
+              description: >
+                The hostname that will be used to access this Keycloak
+                service from outside the cluster. The Entando Operator will
+                create an ingress reflecting this hostname, and expose
+                Keycloak on the '/auth' path on this host. If omitted, the operator will generate a default host
+                path.
+
+                See [here] (https://dev.entando.org/v6.3/docs/concepts/operator-intro.html#ingress-path-generation) for how the operator will create and configure the Ingress.
+
+              type: string
+              pattern: '^([A-Za-z0-9-]{1,63}\.)*[[A-Za-z0-9-]{1,63}$'
+            tlsSecretName:
+              description: >
+                The name of a standard Kubernetes TLS Secret, assumed to be
+                in the same Namespace as the EntandoKeycloakServer being
+                created. See (here) [https://dev.entando.org/v6.3/docs/concepts/operator-intro.html#tls-secret-creation] for details and instructions on
+                creating a secret for your Entando applications.
+
+              type: string
+              pattern: '^([a-z])+([a-z0-9-\.])*[a-z0-9]$'
+            serviceAccountToUse:
+              description: >
+                The Kubernetes ServiceAccount in the Namespace of the
+                EntandoKeycloakServer that is to be used for the Pods
+                hosting the Keycloak services. Can be left empty for most
+                situations, as the Keycloak service doesn't make direct use
+                of Kubernetes resources.
+              type: string
+              pattern: '^([a-z])+([a-z0-9-\.])*[a-z0-9]$'
+            environmentVariables:
+              description: >
+                A list of environment variable following the standard
+                structure of Kubernetes Environment Variables
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+                  valueFrom:
+                    type: object
+                    properties:
+                      configMapKeyRef:
+                        type: object
+                        properties:
+                          name:
+                            description: >-
+                              Name of a ConfigMap in the same namespace as
+                              the EntandoKeycloakServer
+                            type: string
+                          key:
+                            description: >-
+                              Key of the ConfigMap entry in that holds the
+                              value to be used for the EnvironmentVariable
+                            type: string
+                      fieldRef:
+                        type: object
+                        properties:
+                          apiVersion:
+                            description: >-
+                              Version of the API to used for the field
+                              expression
+                            type: string
+                          fieldPath:
+                            description: Full expression starting from the Pod resource
+                            type: string
+                      resourceFieldRef:
+                        type: object
+                        properties:
+                          containerName:
+                            description: Name of the container to use
+                            type: string
+                          resource:
+                            description: Name of the resource to use
+                            type: string
+                      secretKeyRef:
+                        type: object
+                        properties:
+                          name:
+                            description: >-
+                              Name of a Secret in the same namespace as the
+                              EntandoKeycloakServer
+                            type: string
+                          key:
+                            description: >-
+                              Key of the Secret entry in that holds the
+                              value to be used for the EnvironmentVariable
+                            type: string
+            resourceRequirements:
+              description: >
+                The projected resource requirements of the given Keycloak
+                deployment. Specifies the limits that the container is
+                expected to respect, and the size of requests that will be
+                initiated on behalf of the container. When omitted
+                defaults will be applied.
+              type: object
+              properties:
+                storageRequest:
+                  description: >
+                    Size of persistent storage that will be requested when
+                    deployed. Can be omitted. Supported only by a small
+                    subset of Kubernetes storage providers.
+                  type: string
+                storageLimit:
+                  description: >
+                    The maximum amount of persistent storage require by the
+                    Keycloak server. Only relevant if the 'embedded' DBMS
+                    option is used. Limits and requests for memory are
+                    measured in bytes. You can express storage as a plain
+                    integer using one of these suffixes: T, G, M, K. You can
+                    also use the power-of-two equivalents: Ti, Gi, Mi, Ki.
+                  type: string
+                memoryRequest:
+                  description: >
+                    The amount of memory that will be requested when
+                    deployed. A pod will only be deployed to a node that has
+                    this amount of memory available. You can  express memory
+                    as a plain integer using one of these suffixes: T, G, M,
+                    K. You can also use the power-of-two equivalents: Ti,
+                    Gi, Mi, Ki.
+                  type: string
+                memoryLimit:
+                  description: >
+                    The maximum amount of memory that the container is
+                    expected to use. Kubernetes will limit the amount of
+                    memory to the container the to amount specified. You
+                    can  express memory as a plain integer using one of
+                    these suffixes: T, G, M, K. You can also use the
+                    power-of-two equivalents: Ti, Gi, Mi, Ki.
+                  type: string
+                cpuRequest:
+                  description: >
+                    The amount of CPU units that will be requested from a
+                    node at deployment time. A pod will only be deployed to
+                    a node if the node has this amount of CPU units
+                    available. Supports decimal numbers, or alternatively
+                    the suffix 'm' can be used to specify a millicore.
+                    Precision lower than 1m is not supported.
+                  type: string
+                cpuLimit:
+                  description: >
+                    The maximum amount of CPU units that will be required by
+                    the container.Supports decimal numbers, or alternatively
+                    the suffix 'm' can be used to specify a millicore.
+                    Precision lower than 1m is not supported.
+                  type: string
+                fileUploadLimit:
+                  description: >
+                    The maximum file upload size. This limit will be
+                    enforced by NGINX compliant Ingress controllers. The
+                    suffix 'm' allows the limit to be specified in
+                    megabytes, eg. '120m'.
+                  type: string
+            customImage:
+              description: >
+                The full URI of a custom image provided by the deployer.
+                This image needs to be based on the appropriate base image:
+                either entando/entando-keycloak or
+                entando/entando-redhat-sso
+              type: string
+            frontEndUrl:
+              description: >
+                The URL that will be used to access Keycloak from web
+                applications.
+              type: string
+            isDefault:
+              description: >
+                Set this property to 'true' if this Keycloak instance is to
+                be used by the deployments of other Entando custom resource
+                when they do not specify it themselves.
+              type: boolean
+            standardImage:
+              description: >
+                One of the standard images for Keycloak provided by Entando.
+                The value can be either 'keycloak' or 'redhat-sso'. Please
+                note that, when the Entando Operator runs in certified Red
+                Hat mode, it will always use the 'redhat-sso' image. This
+                can be controlled by setting the environment variable
+                ENTANDO_K8S_OPERATOR_COMPLIANCE_MODE on the Entando Operator
+                to one of COMMUNITY or REDHAT
+              type: string
+              pattern: ^(keycloak|redhat-sso)$
+        status:
+          type: object
+          properties:
+            observedGeneration:
+              type: number
+            entandoDeploymentPhase:
+              type: string
+            serverStatuses:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+  names:
+    kind: EntandoKeycloakServer
+    plural: entandokeycloakservers
+    shortNames:
+      - ekcs
+  scope: Namespaced

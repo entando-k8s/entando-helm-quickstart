@@ -1,0 +1,18 @@
+{{- if .Values.sharedDatabase }}
+kind: "EntandoDatabaseService"
+apiVersion: "entando.org/v1"
+metadata:
+  name: "{{ .Values.app.name }}-ds"
+  annotations:
+    entando.org/processing-instruction: defer
+spec:
+  dbms: {{ .Values.app.dbms }}
+  {{- if .Values.sharedDatabase.createDeployment }}
+  createDeployment: true
+  {{- else }}
+  databaseName: "{{ .Values.sharedDatabase.databaseName }}"
+  host: "{{ .Values.sharedDatabase.host }}"
+  port: "{{ .Values.sharedDatabase.port }}"
+  secretName: "{{ .Values.sharedDatabase.dbAdminSecret }}"
+  {{- end }}
+{{- end }}

@@ -1,17 +1,22 @@
 app:
   name: quickstart
-  dbms: none
-#  singleHostName:  your-hostname
-#externalDatabase:
+## specify your preferred DBMS. Valid values are embedded|mysql|postgresql.
+  dbms: postgresql
+## To expose all the deployments on a single hostname, uncomment the following line and provide the hostname
+  singleHostName:  ampie.apps.serv.run
+##To share a single database service across all deployments, uncomment the following line and follow the subsequent instructions
+sharedDatabase:
+##To deploy a single shared database container, uncomment the following line:
+  createDeployment: true
+##Alternatively, to point to an existing external database, uncomment these lines, provide valid values to the properties
+## and create a secret with the correct credentials (e.g. sample-secrets/sample-db-admin-credentials.yaml)
 #  host: openshift.serv.run
 #  port: 32432
 #  databaseName: sampledb
-#  username:
-#  password:
+#  dbAdminSecret: sample-db-admin-credentials
 operator:
   supportOpenshift: true
   env:
-    ENTANDO_DOCKER_IMAGE_VERSION_FALLBACK: 6.0.0
     #ENTANDO_DOCKER_REGISTRY_OVERRIDE: docker.io # Remove comment if you want to always use a specific docker registry
     #ENTANDO_DOCKER_IMAGE_ORG_OVERRIDE: entando # Remove the comment if you want to always use a specific docker organization
     ENTANDO_DEFAULT_ROUTING_SUFFIX: your.domain.suffix.com
@@ -22,8 +27,17 @@ operator:
     ENTANDO_K8S_OPERATOR_FORCE_DB_PASSWORD_RESET: "true"
     ENTANDO_K8S_OPERATOR_DISABLE_PVC_GARBAGE_COLLECTION: "false"
     ENTANDO_ASSUME_EXTERNAL_HTTPS_PROVIDER: "false"
-  tls:
-    caCrt:
-    tlsCrt:
-    tlsKey:
+    RELATED_IMAGE_ENTANDO_K8S_COMPOSITE_APP_CONTROLLER: entando/entando-k8s-composite-app-controller@sha256:4bc6797bb41b3e407b64530c3cff7a78f3fc2c22863caad9c606ccd650310b61
+    RELATED_IMAGE_APP_BUILDER: docker.io/entando/app-builder@sha256:deaba1c0fd845dec553df359157d52de15252f4ac9dc617e18172d47aa70782c
+    RELATED_IMAGE_ENTANDO_COMPONENT_MANAGER: docker.io/entando/entando-component-manager@sha256:668191fc86b090452baaba18ec7bbc3d07df5a99750e0c5b98759599d565cfbe
+    RELATED_IMAGE_ENTANDO_DE_APP_EAP: docker.io/entando/entando-de-app-eap@sha256:a1943f57fff5ed54e88d69f86fbcc70de3b276c8115db2079d9492778eb8a9de
+    ## To expose all HTTP service over HTTPS, uncomment the following line and create a secret with the TLS certificate
+    ##  and private key (e.g. sample-secrets/sample-tls-secret.yaml)
+    #ENTANDO_TLS_SECRET_NAME: sample-tls-secret
+    ## To add trusted CA certificates to your applications, uncomment the following line and create a secret with the
+    ## the trusted CA certificates (e.g. sample-secrets/sample-ca-cert-secret.yaml)
+    #ENTANDO_CA_SECRET_NAME: sample-ca-cert-secret
+    ## To add allow deployments to use images from a secure registry, uncomment the following line and create the
+    ## required image pull secret(e.g. sample-secrets/sample-image-pull-secret.yaml)
+    #ENTANDO_K8S_OPERATOR_IMAGE_PULL_SECRETS: sample-pull-secret
 deployPDA: false

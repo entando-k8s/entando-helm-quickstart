@@ -1,0 +1,208 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: entandoclusterinfrastructures.entando.org
+spec:
+  group: entando.org
+  versions:
+    - name: v1
+      served: true
+      storage: true
+  subresources:
+    status: {}
+  additionalPrinterColumns:
+    - name: Phase
+      type: string
+      JSONPath: .status.entandoDeploymentPhase
+    - name: Observed Generation
+      type: number
+      JSONPath: .status.observedGeneration
+    - name: Age
+      type: date
+      JSONPath: .metadata.creationTimestamp
+    - name: Host
+      type: string
+      JSONPath: .spec.ingressHostName
+    - name: Replicas
+      type: integer
+      JSONPath: .spec.replicas
+    - name: Keycloak
+      type: string
+      JSONPath: .spec.keycloakToUse.name
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          type: object
+          properties:
+            replicas:
+              description: The number of pods that should participate in the cluster of Keycloak servers.
+              type: integer
+              minimum: 1
+              maximum: 10
+            ingressHostName:
+              description: >
+                The hostname that will be used to access this cluster infrastructure service from outside the cluster. The Entando
+                Operator will create an Ingress reflecting this hostname and make it available to internal components that need it.
+              type: string
+              pattern: '^([A-Za-z0-9-]{1,63}\.)*[[A-Za-z0-9-]{1,63}$'
+            tlsSecretName:
+              description: >
+                The name of a standard Kubernetes TLS Secret, assumed to be in the same Namespace as the EntandoClusterInfrastructure
+                being created. See [here](https://dev.entando.org/v6.3/docs/concepts/operator-intro.html#tls-secret-creation) for details and instructions on creating a secret for your Entando applications.
+              type: string
+              pattern: '^([a-z])+([a-z0-9-\.])*[a-z0-9]$'
+            serviceAccountToUse:
+              description: >
+                The Kubernetes ServiceAccount in the Namespace of the EntandoClusterInfrastructure that is to be used for
+                the pods hosting the  services. Can be left empty in
+                most situations.
+              type: string
+              pattern: '^([a-z])+([a-z0-9-\.])*[a-z0-9]$'
+            environmentVariables:
+              description: >
+                A list of environment variable following the standard structure of Kubernetes Environment Variables
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+                  valueFrom:
+                    type: object
+                    properties:
+                      configMapKeyRef:
+                        type: object
+                        properties:
+                          name:
+                            description: Name of a ConfigMap in the same namespace as the EntandoClusterInfrastructure
+                            type: string
+                          key:
+                            description: Key of the ConfigMap entry in that holds the value to be used for the EnvironmentVariable
+                            type: string
+                      fieldRef:
+                        type: object
+                        properties:
+                          apiVersion:
+                            description: Version of the API to used for the field expression
+                            type: string
+                          fieldPath:
+                            description: Full expression starting from the Pod resource
+                            type: string
+                      resourceFieldRef:
+                        type: object
+                        properties:
+                          containerName:
+                            description: Name of the container to use
+                            type: string
+                          resource:
+                            description: Name of the resource to use
+                            type: string
+                      secretKeyRef:
+                        type: object
+                        properties:
+                          name:
+                            description: Name of a Secret in the same namespace as the EntandoClusterInfrastructure
+                            type: string
+                          key:
+                            description: Key of the Secret entry in that holds the value to be used for the EnvironmentVariable
+                            type: string
+            resourceRequirements:
+              description: >
+                The projected resource requirements of the given cluster infrastructure deployment. Specifies the limits that the
+                container is expected to respect, and the size of requests that will be initiated on behalf of the
+                container. When omitted defaults will be applied.
+              type: object
+              properties:
+                storageRequest:
+                  description: >
+                    Size of persistent storage that will be requested when deployed. Can be omitted. Supported only
+                    by a small subset of Kubernetes storage providers.
+                  type: string
+                storageLimit:
+                  description: >
+                    The maximum amount of persistent storage required by the server. Only relevant
+                    if the 'embedded' DBMS option is used. Limits and requests for memory are measured in bytes. You can
+                    express storage as a plain integer using one of these suffixes: T, G, M, K. You can also
+                    use the power-of-two equivalents: Ti, Gi, Mi, Ki.
+                  type: string
+                memoryRequest:
+                  description: >
+                    The amount of memory that will be requested when deployed. A pod will only be deployed to a node
+                    that has this amount of memory available. You can  express memory as a plain integer using one of
+                    these suffixes: T, G, M, K. You can also use the power-of-two equivalents: Ti, Gi, Mi, Ki.
+                  type: string
+                memoryLimit:
+                  description: >
+                    The maximum amount of memory that the container is expected to use. Kubernetes will limit the amount
+                    of memory to the container the to amount specified. You can  express memory as a plain integer using one of
+                    these suffixes: T, G, M, K. You can also use the power-of-two equivalents: Ti, Gi, Mi, Ki.
+                  type: string
+                cpuRequest:
+                  description: >
+                    The amount of CPU units that will be requested from a node at deployment time. A pod will only be
+                    deployed to a node if the node has this amount of CPU units available. Supports decimal numbers, or
+                    alternatively the suffix 'm' can be used to specify a millicore. Precision lower than 1m is not supported.
+                  type: string
+                cpuLimit:
+                  description: >
+                    The maximum amount of CPU units that will be required by the container.Supports decimal numbers, or
+                    alternatively the suffix 'm' can be used to specify a millicore. Precision lower than 1m is not supported.
+                  type: string
+                fileUploadLimit:
+                  description: >
+                    The maximum file upload size. This limit will be enforced by NGINX compliant Ingress controllers.
+                    The suffix 'm' allows the limit to be specified in megabytes, eg. '120m'.
+                  type: string
+            isDefault:
+              description: >
+                Set this property to 'true' if this instance is to be used by the deployments of other
+                Entando custom resource when they do not specify it themselves.
+              type: boolean
+            keycloakToUse:
+              type: object
+              description: >
+                The properties of this object configure which Keycloak server this Entando K8S Service will be using,
+                and allows the user to override the default Realm and PublicClientID to use.
+              properties:
+                realm:
+                  description: >
+                    The realm that will be used to create the OIDC Client for this Entando K8S Service. If omitted, the
+                    default realm will be 'Entando'. If another realm is specified, and it doesn't exist by
+                    the time the Entando K8S Service is deployed, the realm will be created on demand.
+                  type: string
+                name:
+                  description: >
+                    The name of the EntandoKeycloakServer to use as OIDC provider. If no name is provided, the
+                    Entando Operator will then look for any EntandoKeycloakServer in the same Namespace as this
+                    EntandoClusterInfrastructure and use it as OIDC provider. If no EntandoKeycloakServer is found,
+                    it will then use the (last) EntandoKeycloakServer that was marked as the cluster wide  default
+                    using the property EntandoKeycloakServer.spec.isDefault.
+                  type: string
+                namespace:
+                  description: >
+                    The Namespace of the EntandoKeycloakServer to use as OIDC provider. This value is only
+                    evaluated if the 'spec.keycloakToUse.name' property has been set on this
+                    EntandoClusterInfrastructure.  If no Namespace is provided,
+                    but a name was provided, the Entando Operator will then look for the
+                    EntandoKeycloakServer with the name specified in the same Namespace as this
+                    EntandoClusterInfrastructure and use it as OIDC provider.
+                  type: string
+        status:
+          type: object
+          properties:
+            observedGeneration:
+              type: number
+            entandoDeploymentPhase:
+              type: string
+            serverStatuses:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+  names:
+    kind: EntandoClusterInfrastructure
+    plural: entandoclusterinfrastructures
+    shortNames:
+      - ecis
+  scope: Namespaced

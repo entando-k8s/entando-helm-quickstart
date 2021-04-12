@@ -2,151 +2,49 @@ kind: "EntandoCompositeApp"
 apiVersion: "entando.org/v1"
 metadata:
   name: "{{ .Values.app.name }}-composite-app"
-  namespace: {{ .Release.Namespace }}
+  namespace: "{{ .Release.Namespace }}"
 entandoStatus:
   serverStatuses: {}
   entandoDeploymentPhase: "requested"
 spec:
   components:
-    {{- if .Values.externalDatabase }}
-    - kind: "EntandoDatabaseService"
+{{- if .Values.sharedDatabase }}
+    - kind: "EntandoCustomResourceReference"
       metadata:
-        name: "{{ .Values.app.name }}-ds"
+        name: "database-service"
       spec:
-        dbms: {{ .Values.app.dbms }}
-        databaseName: "{{ .Values.externalDatabase.databaseName }}"
-        host: "{{ .Values.externalDatabase.host }}"
-        port: "{{ .Values.externalDatabase.port }}"
-        secretName: "{{ .Values.app.name }}-db-admin-secret"
-    {{- end }}
-    - kind: "EntandoKeycloakServer"
+        targetKind: "EntandoDatabaseService"
+        targetName: "{{ .Values.app.name }}-ds"
+{{- end }}
+    - kind: "EntandoCustomResourceReference"
       metadata:
-        name: "{{ .Values.app.name }}-kc"
+        name: "keycloak-server"
       spec:
-        dbms: {{ .Values.app.dbms | default "none" }}
-        isDefault: true
-        replicas: 1
-    {{- if .Values.app.singleHostName }}
-        ingressHostName: {{ .Values.app.singleHostName }}
-    {{- end}}
-    - kind: "EntandoClusterInfrastructure"
+        targetKind: "EntandoKeycloakServer"
+        targetName: "{{ .Values.app.name }}-kc"
+    - kind: "EntandoCustomResourceReference"
       metadata:
         name: "{{ .Values.app.name }}-eci"
       spec:
-        dbms: {{ .Values.app.dbms | default "none" }}
-        replicas: 1
-        isDefault: true
-    {{- if .Values.app.singleHostName }}
-        ingressHostName: {{ .Values.app.singleHostName }}
-    {{- end}}
-    - kind: "EntandoApp"
+        targetKind: "EntandoClusterInfrastructure"
+        targetName: "{{ .Values.app.name }}-eci"
+    - kind: "EntandoCustomResourceReference"
       metadata:
-        annotations: {}
-        labels: {}
-        name: "{{ .Values.app.name }}"
+        name: "app"
       spec:
-        dbms: {{ .Values.app.dbms | default "none" }}
-        replicas: 1
-        standardServerImage: wildfly
-        ingressPath: /entando-de-app
-    {{- if .Values.app.singleHostName }}
-        ingressHostName: {{ .Values.app.singleHostName }}
-    {{- end}}
-    {{- if .Values.deployPDA }}
-        customServerImage: "docker.io/entando/entando-pam-app-wildfly:latest"
-
-    - kind: "EntandoPlugin"
+        targetKind: "EntandoApp"
+        targetName: "{{ .Values.app.name }}"
+{{- if .Values.deployPDA }}
+    - kind: "EntandoCustomResourceReference"
       metadata:
         name: "{{ .Values.app.name }}-pda"
       spec:
-        image: "docker.io/entando/entando-process-driven-plugin:latest"
-        replicas: 1
-        dbms: "mysql"
-        roles:
-        - name: "task-list"
-          code: "task-list"
-        - name: "task-get"
-          code: "task-get"
-        - name: "task-claim"
-          code: "task-claim"
-        - name: "task-unclaim"
-          code: "task-unclaim"
-        - name: "task-assign"
-          code: "task-assign"
-        - name: "task-start"
-          code: "task-start"
-        - name: "task-pause"
-          code: "task-pause"
-        - name: "task-resume"
-          code: "task-resume"
-        - name: "task-complete"
-          code: "task-complete"
-        - name: "task-definition-columns-list"
-          code: "task-definition-columns-list"
-        - name: "task-comments-list"
-          code: "task-comments-list"
-        - name: "task-comments-get"
-          code: "task-comments-get"
-        - name: "task-comments-create"
-          code: "task-comments-create"
-        - name: "task-comments-delete"
-          code: "task-comments-delete"
-        - name: "task-attachments-list"
-          code: "task-attachments-list"
-        - name: "task-attachments-get"
-          code: "task-attachments-get"
-        - name: "task-attachments-create"
-          code: "task-attachments-create"
-        - name: "task-attachments-delete"
-          code: "task-attachments-delete"
-        - name: "task-attachments-download"
-          code: "task-attachments-download"
-        - name: "task-form-get"
-          code: "task-form-get"
-        - name: "task-form-submit"
-          code: "task-form-submit"
-        - name: "connection-list"
-          code: "connection-list"
-        - name: "connection-get"
-          code: "connection-get"
-        - name: "connection-create"
-          code: "connection-create"
-        - name: "connection-edit"
-          code: "connection-edit"
-        - name: "connection-delete"
-          code: "connection-delete"
-        - name: "connection-test"
-          code: "connection-test"
-        - name: "process-definition-list"
-          code: "process-definition-list"
-        - name: "process-diagram"
-          code: "process-diagram"
-        - name: "process-definition-form-get"
-          code: "process-definition-form-get"
-        - name: "process-definition-form-submit"
-          code: "process-definition-form-submit"
-        - name: "group-list"
-          code: "group-list"
-        - name: "summary-data-repository-list"
-          code: "summary-data-repository-list"
-        - name: "summary-type-list"
-          code: "summary-type-list"
-        - name: "summary-get"
-          code: "summary-get"
-        permissions: []
-        ingressPath: "/pda"
-    {{- if .Values.app.singleHostName }}
-        ingressHostName: {{ .Values.app.singleHostName }}
-    {{- end}}
-        healthCheckPath: "/actuator/health"
-        securityLevel: lenient
-        connectionConfigNames: []
-    - kind: "EntandoAppPluginLink"
+        targetKind: "EntandoPlugin"
+        targetName: "{{ .Values.app.name }}-pda"
+    - kind: "EntandoCustomResourceReference"
       metadata:
-        name: "{{ .Values.app.name }}-pda-apl"
+        name: "{{ .Values.app.name }}-pda"
       spec:
-        entandoAppNamespace: "{{ .Release.Namespace }}"
-        entandoAppName: "{{ .Values.app.name }}"
-        entandoPluginNamespace: "{{ .Release.Namespace }}"
-        entandoPluginName: "{{ .Values.app.name }}-pda"
-    {{- end }}
+        targetKind: "EntandoAppPluginLink"
+        targetName: "{{ .Values.app.name }}-pda-apl"
+{{- end }}

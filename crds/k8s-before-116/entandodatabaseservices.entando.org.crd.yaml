@@ -1,0 +1,237 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: entandodatabaseservices.entando.org
+spec:
+  group: entando.org
+  versions:
+    - name: v1
+      served: true
+      storage: true
+  subresources:
+    status: {}
+  additionalPrinterColumns:
+    - name: Phase
+      type: string
+      JSONPath: .status.entandoDeploymentPhase
+    - name: Age
+      type: date
+      JSONPath: .metadata.creationTimestamp
+    - name: DBMS
+      type: string
+      JSONPath: .spec.dbms
+    - name: Replicas
+      type: integer
+      JSONPath: .spec.replicas
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          type: object
+          properties:
+            replicas:
+              description: >-
+                The number of pods that should participate in the cluster of
+                Database servers. For advanced use cases only.
+              type: integer
+              minimum: 1
+              maximum: 10
+            dbms:
+              description: >
+                The database management system (DBMS) to make available as a Kubernetes Service.
+                Can be oracle, mysql or postgresql. Only 1 replica of the container is supported if embedded is selected. If
+                Oracle is selected it must be created manually, the operator does not deploy Oracle instances.
+                See [here](https://dev.entando.org/v6.3/docs/concepts/operator-intro.html#database-deployment) for how the operator will create and configure the DBMS.
+              type: string
+              pattern: ^(mysql|oracle|postgresql)$
+            storageClass:
+              description: >
+                The name of the StorageClass to use for PersistentVolumeClaims created for this EntandoDatabaseService
+              type: string
+            createDeployment:
+              description: >
+                When this property is 'true', the Entando Operator will create a Kubernetes Deployment using
+                the standard Docker image for the DBMS specified. It will also create a Kubernetes Service
+                to allow other Pods to connect to the resulting database service. When this property is 'false',
+                the Entando Operator will only create a Kubernetes Service that is then configured to point to
+                the external database service as specified in the 'host' and 'port' properties.
+              type: boolean
+            host:
+              description: >
+                When 'spec.createDeployment' is false, this field is required to
+                create a Service  that points to an external database server using
+                the value of the host property.
+              type: string
+              pattern: '^([A-Za-z0-9-]{1,63}\.)*[[A-Za-z0-9-]{1,63}$'
+            port:
+              description: >
+                When 'spec.createDeployment' is false, this field is required to
+                create a Service that points to an external database service running
+                on the port specified on this property. If no value is provided, it
+                defaults to the default port of the DBMS in question.
+              type: integer
+            database:
+              description: >
+                If 'spec.createDeployment' is false, this is the name of the database
+                that this database service will connect to. If 'spec.createDeployment'
+                is true, and PostgreSQL is being used, it will create the database
+                on PostgreSQL. This property has no effect on MySQL.
+              type: string
+            tablespace:
+              description: >
+                Only used in Oracle to specify the tablespace that tables should be
+                created on.
+              type: string
+            secretName:
+              description: >
+                The name of a Kubernetes Secret that contains the username and password
+                of a user on the database server that has superuser permissions.
+              type: string
+            jdbcParameters:
+              type: object
+              description: >
+                A map of name/value pairs that will be appended to the connection string
+                to the database in questions.
+            serviceAccountToUse:
+              description: >
+                The Kubernetes ServiceAccount in the Namespace of the
+                EntandoDatabaseService that is to be used for the Pods
+                hosting the database service. Can be left empty for most
+                situations, as the database container doesn't make direct use
+                of Kubernetes resources.
+              type: string
+              pattern: '^([a-z])+([a-z0-9-\.])*[a-z0-9]$'
+            environmentVariables:
+              description: >
+                A list of environment variable following the standard
+                structure of Kubernetes Environment Variables
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+                  valueFrom:
+                    type: object
+                    properties:
+                      configMapKeyRef:
+                        type: object
+                        properties:
+                          name:
+                            description: >-
+                              Name of a ConfigMap in the same namespace as
+                              the EntandoDatabaseService
+                            type: string
+                          key:
+                            description: >-
+                              Key of the ConfigMap entry in that holds the
+                              value to be used for the EnvironmentVariable
+                            type: string
+                      fieldRef:
+                        type: object
+                        properties:
+                          apiVersion:
+                            description: >-
+                              Version of the API to used for the field
+                              expression
+                            type: string
+                          fieldPath:
+                            description: Full expression starting from the Pod resource
+                            type: string
+                      resourceFieldRef:
+                        type: object
+                        properties:
+                          containerName:
+                            description: Name of the container to use
+                            type: string
+                          resource:
+                            description: Name of the resource to use
+                            type: string
+                      secretKeyRef:
+                        type: object
+                        properties:
+                          name:
+                            description: >-
+                              Name of a Secret in the same namespace as the
+                              EntandoDatabaseService
+                            type: string
+                          key:
+                            description: >-
+                              Key of the Secret entry in that holds the
+                              value to be used for the EnvironmentVariable
+                            type: string
+            resourceRequirements:
+              description: >
+                The projected resource requirements of the given database
+                deployment. Specifies the limits that the container is
+                expected to respect, and the size of requests that will be
+                initiated on behalf of the container. When omitted our known
+                defaults will be applied.
+              type: object
+              properties:
+                storageRequest:
+                  description: >
+                    Size of persistent storage that will be requested when
+                    deployed. Can be omitted. Supported only by a small
+                    subset of Kubernetes storage providers.
+                  type: string
+                storageLimit:
+                  description: >
+                    The maximum amount of persistent storage require by the
+                    database server.  Limits and requests for memory are
+                    measured in bytes. You can express storage as a plain
+                    integer using one of these suffixes: T, G, M, K. You can
+                    also use the power-of-two equivalents: Ti, Gi, Mi, Ki.
+                  type: string
+                memoryRequest:
+                  description: >
+                    The amount of memory that will be requested when
+                    deployed. A pod will only be deployed to a node that has
+                    this amount of memory available. You can  express memory
+                    as a plain integer using one of these suffixes: T, G, M,
+                    K. You can also use the power-of-two equivalents: Ti,
+                    Gi, Mi, Ki.
+                  type: string
+                memoryLimit:
+                  description: >
+                    The maximum amount of memory that the container is
+                    expected to use. Kubernetes will limit the amount of
+                    memory to the container the to amount specified. You
+                    can  express memory as a plain integer using one of
+                    these suffixes: T, G, M, K. You can also use the
+                    power-of-two equivalents: Ti, Gi, Mi, Ki.
+                  type: string
+                cpuRequest:
+                  description: >
+                    The amount of CPU units that will be requested from a
+                    node at deployment time. A pod will only be deployed to
+                    a node if the node has this amount of CPU units
+                    available. Supports decimal numbers, or alternatively
+                    the suffix 'm' can be used to specify a millicore.
+                    Precision lower than 1m is not supported.
+                  type: string
+                cpuLimit:
+                  description: >
+                    The maximum amount of CPU units that will be required by
+                    the container.Supports decimal numbers, or alternatively
+                    the suffix 'm' can be used to specify a millicore.
+                    Precision lower than 1m is not supported.
+                  type: string
+        status:
+          type: object
+          properties:
+            observedGeneration:
+              type: number
+            entandoDeploymentPhase:
+              type: string
+            serverStatuses:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+  names:
+    kind: EntandoDatabaseService
+    plural: entandodatabaseservices
+    shortNames:
+      - eds
+  scope: Namespaced

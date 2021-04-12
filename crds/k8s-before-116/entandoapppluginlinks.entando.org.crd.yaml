@@ -1,0 +1,70 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: entandoapppluginlinks.entando.org
+spec:
+  group: entando.org
+  versions:
+    - name: v1
+      served: true
+      storage: true
+  subresources:
+    status: {}
+  additionalPrinterColumns:
+    - name: Phase
+      type: string
+      JSONPath: .status.entandoDeploymentPhase
+    - name: Age
+      type: date
+      JSONPath: .metadata.creationTimestamp
+    - name: App
+      type: string
+      JSONPath: .spec.entandoAppName
+    - name: Plugin-NS
+      type: string
+      JSONPath: .spec.entandoPluginNamespace
+    - name: Plugin-Name
+      type: string
+      JSONPath: .spec.entandoPluginName
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          type: object
+          properties:
+            entandoAppName:
+              description: >
+                The name (EntandoApp.metadata.name) of the EntandoApp that this EntandoAppPluginLink has to link to.
+              type: string
+            entandoAppNamespace:
+              description: >
+                The Namespace (EntandoApp.metadata.namespace) of the EntandoApp that this EntandoAppPluginLink has to link to.
+                When this property is not specified, it is assumed that the targeted EntandoApp is in the same
+                Namespace as this EntandoAppPluginLink
+              type: string
+            entandoPluginName:
+              description: >
+                The name (EntandoApp.metadata.name) of the EntandoPlugin that this EntandoAppPluginLink has to link to.
+              type: string
+            entandoPluginNamespace:
+              description: >
+                The Namespace (EntandoApp.metadata.namespace) of the EntandoPlugin that this EntandoAppPluginLink has to link to.
+                When this property is not specified, it is assumed that the targeted EntandoPlugin is in the same
+                Namespace as this EntandoAppPluginLink
+              type: string
+        status:
+          type: object
+          properties:
+            observedGeneration:
+              type: number
+            entandoDeploymentPhase:
+              type: string
+            serverStatuses:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+  names:
+    kind: EntandoAppPluginLink
+    plural: entandoapppluginlinks
+    shortNames:
+      - elnk
+  scope: Namespaced
