@@ -2,11 +2,11 @@
 kind: "EntandoDatabaseService"
 apiVersion: "entando.org/v1"
 metadata:
-  name: "{{ .Values.app.name }}-ds"
+  name: "{{ .Release.Name }}-ds"
   annotations:
     entando.org/processing-instruction: defer
 spec:
-  dbms: {{ .Values.app.dbms }}
+  dbms: {{ .Values.dbms }}
   {{- if .Values.sharedDatabase.createDeployment }}
   createDeployment: true
   {{- else }}

@@ -2,10 +2,10 @@
 kind: "EntandoAppPluginLink"
 apiVersion: "entando.org/v1"
 metadata:
-  name: "{{ .Values.app.name }}-pda-apl"
+  name: "{{ .Release.Name }}-pda-apl"
   annotations:
     entando.org/processing-instruction: defer
 spec:
-  entandoAppName: "{{ .Values.app.name }}"
-  entandoPluginName: "{{ .Values.app.name }}-pda"
+  entandoAppName: "{{ .Release.Name }}"
+  entandoPluginName: "{{ .Release.Name }}-pda"
 {{- end }}

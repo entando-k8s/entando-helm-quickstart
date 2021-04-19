@@ -1,13 +1,12 @@
 apiVersion: "entando.org/v1"
 kind: "EntandoClusterInfrastructure"
 metadata:
-  name: "{{ .Values.app.name }}-eci"
+  name: "{{ .Release.Name }}-eci"
   annotations:
     entando.org/processing-instruction: defer
 spec:
-  dbms: {{ .Values.app.dbms }}
-{{- if .Values.app.singleHostName }}
-  ingressHostName: {{ .Values.app.singleHostName }}
+{{- if .Values.singleHostname }}
+  ingressHostName: {{ .Values.singleHostname }}
 {{- end}}
   replicas: 1
   isDefault: true

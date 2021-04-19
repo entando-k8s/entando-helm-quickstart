@@ -2,12 +2,12 @@
 kind: "EntandoPlugin"
 apiVersion: "entando.org/v1"
 metadata:
-  name: "{{ .Values.app.name }}-pda"
+  name: "{{ .Release.Name }}-pda"
   annotations:
     entando.org/processing-instruction: defer
 spec:
-{{- if .Values.app.singleHostName }}
-  ingressHostName: {{ .Values.app.singleHostName }}
+{{- if .Values.singleHostname }}
+  ingressHostName: {{ .Values.singleHostname }}
 {{- end}}
   image: "docker.io/entando/entando-process-driven-plugin:latest"
   replicas: 1

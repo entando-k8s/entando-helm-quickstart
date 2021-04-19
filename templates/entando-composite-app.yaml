@@ -1,11 +1,7 @@
 kind: "EntandoCompositeApp"
 apiVersion: "entando.org/v1"
 metadata:
-  name: "{{ .Values.app.name }}-composite-app"
-  namespace: "{{ .Release.Namespace }}"
-entandoStatus:
-  serverStatuses: {}
-  entandoDeploymentPhase: "requested"
+  name: "{{ .Release.Name }}-composite-app"
 spec:
   components:
 {{- if .Values.sharedDatabase }}
@@ -14,37 +10,37 @@ spec:
         name: "database-service"
       spec:
         targetKind: "EntandoDatabaseService"
-        targetName: "{{ .Values.app.name }}-ds"
+        targetName: "{{ .Release.Name }}-ds"
 {{- end }}
     - kind: "EntandoCustomResourceReference"
       metadata:
         name: "keycloak-server"
       spec:
         targetKind: "EntandoKeycloakServer"
-        targetName: "{{ .Values.app.name }}-kc"
+        targetName: "{{ .Release.Name }}-kc"
     - kind: "EntandoCustomResourceReference"
       metadata:
-        name: "{{ .Values.app.name }}-eci"
+        name: "{{ .Release.Name }}-eci"
       spec:
         targetKind: "EntandoClusterInfrastructure"
-        targetName: "{{ .Values.app.name }}-eci"
+        targetName: "{{ .Release.Name }}-eci"
     - kind: "EntandoCustomResourceReference"
       metadata:
         name: "app"
       spec:
         targetKind: "EntandoApp"
-        targetName: "{{ .Values.app.name }}"
+        targetName: "{{ .Release.Name }}"
 {{- if .Values.deployPDA }}
     - kind: "EntandoCustomResourceReference"
       metadata:
-        name: "{{ .Values.app.name }}-pda"
+        name: "{{ .Release.Name }}-pda"
       spec:
         targetKind: "EntandoPlugin"
-        targetName: "{{ .Values.app.name }}-pda"
+        targetName: "{{ .Release.Name }}-pda"
     - kind: "EntandoCustomResourceReference"
       metadata:
-        name: "{{ .Values.app.name }}-pda"
+        name: "{{ .Release.Name }}-pda"
       spec:
         targetKind: "EntandoAppPluginLink"
-        targetName: "{{ .Values.app.name }}-pda-apl"
+        targetName: "{{ .Release.Name }}-pda-apl"
 {{- end }}

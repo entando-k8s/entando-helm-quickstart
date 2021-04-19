@@ -1,13 +1,13 @@
 apiVersion: "entando.org/v1"
 kind: "EntandoApp"
 metadata:
-  name: "{{ .Values.app.name }}"
+  name: "{{ .Release.Name }}"
   annotations:
     entando.org/processing-instruction: defer
 spec:
-  dbms: {{ .Values.app.dbms }}
-{{- if .Values.app.singleHostName }}
-  ingressHostName: {{ .Values.app.singleHostName }}
+  dbms: {{ .Values.dbms }}
+{{- if .Values.singleHostname }}
+  ingressHostName: {{ .Values.singleHostname }}
 {{- end}}
   replicas: 1
   standardServerImage: wildfly
