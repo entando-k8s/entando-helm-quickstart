@@ -5,8 +5,8 @@ metadata:
   annotations:
     entando.org/processing-instruction: defer
 spec:
-{{- if .Values.singleHostname }}
-  ingressHostName: {{ .Values.singleHostname }}
+{{- if .Values.singleHostName }}
+  ingressHostName: {{ .Values.singleHostName }}
 {{- end}}
   replicas: 1
   isDefault: true

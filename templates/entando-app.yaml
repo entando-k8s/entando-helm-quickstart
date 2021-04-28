@@ -6,8 +6,8 @@ metadata:
     entando.org/processing-instruction: defer
 spec:
   dbms: {{ .Values.dbms }}
-{{- if .Values.singleHostname }}
-  ingressHostName: {{ .Values.singleHostname }}
+{{- if .Values.singleHostName }}
+  ingressHostName: {{ .Values.singleHostName }}
 {{- end}}
   replicas: 1
   standardServerImage: wildfly
