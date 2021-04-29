@@ -39,7 +39,7 @@ data:
 # hostname, the hostnames for deployments will be calculated by prefixing the name and namespace of the resource to this
 # routing suffix.
 #
-  entando.default.routing.suffix: ampie.dynu.net
+#  entando.default.routing.suffix: your.domain.com
 
 # if you want to inspect the Entando deployer pods even after deployment has completed successfully, you can turn of
 # the deployer pod garbage collection by setting the property 'entando.k8s.operator.gc.controller.pods' to "false"

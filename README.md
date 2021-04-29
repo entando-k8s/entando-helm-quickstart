@@ -15,14 +15,14 @@ This quickstart uses Entando's standard Wildfly image.
    
    - for Openshift 3.11: 
       
-        `oc apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/all-in-one.yaml`
+        `oc apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2-final-pr/manifests/k8s-before-116/namespace-scoped-deployment/all-in-one.yaml`
    - for Openshift 4.x please use the [Operator Hub](https://link.to.oh.tutorial)
    - for Kubernetes clusters version 1.16 and later:
        
-        `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-116-and-later/namespace-scoped-deployment/all-in-one.yaml`
+        `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2-final-pr/manifests/k8s-116-and-later/namespace-scoped-deployment/all-in-one.yaml`
    - for Kubernetes clusters before version 1.16 (deprecated):
      
-        `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/all-in-one.yaml`
+        `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2-final-pr/manifests/k8s-before-116/namespace-scoped-deployment/all-in-one.yaml`
      
 2. Configure the Entando Operator (optional)
    
