@@ -1,0 +1,18 @@
+apiVersion: "entando.org/v1"
+kind: "EntandoApp"
+metadata:
+  name: "{{ .Release.Name }}"
+  annotations:
+    entando.org/processing-instruction: defer
+spec:
+  dbms: {{ .Values.dbms }}
+{{- if .Values.singleHostName }}
+  ingressHostName: {{ .Values.singleHostName }}
+{{- end}}
+  replicas: 1
+  standardServerImage: wildfly
+  ingressPath: /entando-de-app
+{{- if .Values.deployPDA }}
+  customServerImage: "docker.io/entando/entando-pam-app-wildfly:latest"
+{{- end }}
+

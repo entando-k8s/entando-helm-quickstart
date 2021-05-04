@@ -1,0 +1,13 @@
+kind: "EntandoKeycloakServer"
+apiVersion: "entando.org/v1"
+metadata:
+  name: "{{ .Release.Name }}-kc"
+  annotations:
+    entando.org/processing-instruction: defer
+spec:
+  dbms: {{ .Values.dbms }}
+{{- if .Values.singleHostName }}
+  ingressHostName: {{ .Values.singleHostName }}
+{{- end}}
+  isDefault: true
+  replicas: 1

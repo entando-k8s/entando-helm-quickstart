@@ -1,0 +1,11 @@
+{{- if .Values.deployPDA }}
+kind: "EntandoAppPluginLink"
+apiVersion: "entando.org/v1"
+metadata:
+  name: "{{ .Release.Name }}-pda-apl"
+  annotations:
+    entando.org/processing-instruction: defer
+spec:
+  entandoAppName: "{{ .Release.Name }}"
+  entandoPluginName: "{{ .Release.Name }}-pda"
+{{- end }}

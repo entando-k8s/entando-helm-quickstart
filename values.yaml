@@ -1,29 +1,18 @@
-app:
-  name: quickstart
-  dbms: none
-#  singleHostName:  your-hostname
-#externalDatabase:
+## specify your preferred DBMS. Valid values are embedded|mysql|postgresql. Please note that if you are using a sharedDatbase,
+## this value cannot be 'embedded' as, by definition, as shared database cannot be embedded.
+dbms: embedded
+## To expose all the deployments for this app on a single hostname, uncomment the following line and provide the hostname
+##singleHostName:  test.mycluster.com
+
+##To share a single database service across all deployments, uncomment the following line and follow the subsequent instructions
+#sharedDatabase:
+##To deploy a single shared database container, uncomment the following line:
+#  createDeployment: true
+##Alternatively, to point to an existing external database, uncomment these lines, provide valid values to the properties
+## and create a secret with the correct credentials (e.g. sample-secrets/sample-db-admin-credentials.yaml)
 #  host: openshift.serv.run
 #  port: 32432
 #  databaseName: sampledb
-#  username:
-#  password:
-operator:
-  supportOpenshift: true
-  env:
-    ENTANDO_DOCKER_IMAGE_VERSION_FALLBACK: 6.0.0
-    #ENTANDO_DOCKER_REGISTRY_OVERRIDE: docker.io # Remove comment if you want to always use a specific docker registry
-    #ENTANDO_DOCKER_IMAGE_ORG_OVERRIDE: entando # Remove the comment if you want to always use a specific docker organization
-    ENTANDO_DEFAULT_ROUTING_SUFFIX: your.domain.suffix.com
-    ENTANDO_POD_READINESS_TIMEOUT_SECONDS: "1000"
-    ENTANDO_POD_COMPLETION_TIMEOUT_SECONDS: "1000"
-    ENTANDO_DISABLE_KEYCLOAK_SSL_REQUIREMENT: "true"
-    ENTANDO_K8S_OPERATOR_IMPOSE_DEFAULT_LIMITS: "false"
-    ENTANDO_K8S_OPERATOR_FORCE_DB_PASSWORD_RESET: "true"
-    ENTANDO_K8S_OPERATOR_DISABLE_PVC_GARBAGE_COLLECTION: "false"
-    ENTANDO_ASSUME_EXTERNAL_HTTPS_PROVIDER: "false"
-  tls:
-    caCrt:
-    tlsCrt:
-    tlsKey:
+#  dbAdminSecret: sample-db-admin-credentials
+##Set this property to 'true' if you want to deploy the Entando Process Driven Apps plugin
 deployPDA: false

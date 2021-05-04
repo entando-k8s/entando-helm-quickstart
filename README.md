@@ -6,38 +6,46 @@ This quickstart uses Entando's standard Wildfly image.
 
   - You have installed either the Openshift client oc or the Kubernetes client kubectl locally
   - You have access to an Openshift or Kubernetes cluster, with a sandbox namespace/project you have admin access to. In subsequent instructions we will refer to this namespace as '[your-sandbox-namespace]'
-  - The Entando K8S Custom Resource Definitions have been registered on your Kubernetes Cluster. For more information, you can consult these [instructions](https://github.com/entando-k8s/entando-k8s-custom-model/blob/master/src/main/resources/crd/README.md).
   - You have installed Helm, ideally the Helm 2 client without Tiller
-
+  - You have read/write access to certain cluster resources such as ClusterRoles and CustomResourceDefinitions, or alternatively someone with such access can perform operations on your behalf
 
 # Steps to deploy to Openshift/Kubernetes
 
-1. In the `values.yaml` file you need to update the configuration for your environment and deployment.
+1. Deploy the correct distribution of the Entando operator from the entando-k8s-operator-bundle project (to be performed by someone with above mentioned cluster read/write access)
+   
+   - for Openshift 3.11: 
+      
+        `oc apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/all-in-one.yaml`
+   - for Openshift 4.x please use the [Operator Hub](https://link.to.oh.tutorial)
+   - for Kubernetes clusters version 1.16 and later:
+       
+        `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-116-and-later/namespace-scoped-deployment/all-in-one.yaml`
+   - for Kubernetes clusters before version 1.16 (deprecated):
+     
+        `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/all-in-one.yaml`
+     
+2. Configure the Entando Operator (optional)
+   
+   The Entando Operator can be configured by modifying the values of properties in the entando-operator-config ConfigMap that can be created in the same namespace as
+   the operator which would be [your-sandbox-namespace]. You can create it from the sample available in sample-configmaps/entando-operator-config.yaml, e.g.:
+      
+      `kubect apply -f sample-configmaps/entando-operator-config.yaml -n [your-sandbox-namespace]`
+   
+   You can edit the configmap in your local text editor using the 'edit' command e.g.:
+   
+      `kubectl edit configmap entando-operator-config -n [you-sandbox-namespace]`
+   
+   Please consult the comments in the sample-configmaps/entando-operator-config.yaml file for more details on common 
+   configuration options.
+3. Customize some of the settings pertaining to the Entando App that will be deployed in the  `values.yaml` file.
+   
+   Please consult the comments in the values.yaml file for more details on what you can change. Please note that 
+   most of these settings can be set directly on the Entando custom resource after deployment too.
 
-    - If you are deploying in Openshift, set the operator.supportOpenshift = true , otherwise set it to `false`
-    - Set `ENTANDO_DEFAULT_ROUTING_SUFFIX` to the value that matches the env you're going to deploy to. For local clusters (MicroK8S, Minikube) that would be your local IP address with the suffix `nip.io`, e.g. `192.168.1.9.nip.io`. On a shared cluster you may need to consult your cluster admin.
-    - If you want to deploy the Process Driven Applications Plugin (PDA), set `deployPDA = true`, otherwise leave it as false
-    - Embedded databases are used by default for the Entando Composite App - i.e. EntandoKeycloakServer, EntandoClusterInfrastructure and EntandoApp; if you want to switch to another DMBS you can change the property `app.dbms`. Accepted values are: `none` (default), `postgresql`, `mysql`, `oracle`,
-    - If you want to impose limits on the minimum/maximum requested resources you can set to `true` the `ENTANDO_K8S_OPERATOR_IMPOSE_DEFAULT_LIMITS`. You can find more info [here](https://dev.entando.org/docs/getting-started/#add-custom-resources).
-
-2. Ensure you have namespace in the cluster you can use, and the current user has admin permissions on the namespace.
-3. Make sure the dependency have been uploaded and are up-to-date
-```
-helm dependency update .
-```
 4. Process the template and deploy the output using your favorite Kubernetes client, e.g:
-```
-helm template --name=my-app  --namespace=[your-sandbox-namespace] ./ | kubectl create -f -
-```
+   
+      `helm template --name=quickstart  ./ | kubectl apply -n [your-sandbox-namespace] -f -`
 
-If desired you can apply a more granular approach regarding used DBMSs for the Composite App components. In such a case you can follow all the previous step except the 7 and proceed as follows:
+5. Follow the progress of the Entando app deployment process using
 
-5. Process the template:
-```
-helm template --name=my-app  --namespace=[your-sandbox-namespace] ./ > generated-template.yml
-```
-
-6. Deploy the generated template file using your favorite Kubernetes client, e.g:
-```
-kubectl create -f generated-template.yml
-```
+     `watch kubectl get pods -n [your-sandbox-namespace]`
