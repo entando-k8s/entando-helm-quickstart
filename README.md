@@ -29,7 +29,7 @@ This quickstart uses Entando's standard Wildfly image.
    The Entando Operator can be configured by modifying the values of properties in the entando-operator-config ConfigMap that can be created in the same namespace as
    the operator which would be [your-sandbox-namespace]. You can create it from the sample available in sample-configmaps/entando-operator-config.yaml, e.g.:
       
-      `kubect apply -f sample-configmaps/entando-operator-config.yaml -n [your-sandbox-namespace]`
+      `kubectl apply -f sample-configmaps/entando-operator-config.yaml -n [your-sandbox-namespace]`
    
    You can edit the configmap in your local text editor using the 'edit' command e.g.:
    
