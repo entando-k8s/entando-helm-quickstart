@@ -58,8 +58,14 @@ This quickstart uses Entando's standard Wildfly image.
    most of these settings can be set directly on the Entando custom resource after deployment too.
 
 5. Process the template and deploy the output using your favorite Kubernetes client, e.g:
-   
-      `helm template --name=quickstart  ./ | kubectl apply -n [your-sandbox-namespace] -f -`
+
+   *helm 2:*
+
+   `helm template --namespace [you-sandbox-namespace] --name=quickstart  ./ | kubectl apply -n [your-sandbox-namespace] -f -`
+
+   *helm 3:*
+
+   `helm template quickstart ./ | kubectl apply -n [your-sandbox-namespace] -f -`
 
 6. Follow the progress of the Entando app deployment process using
 
