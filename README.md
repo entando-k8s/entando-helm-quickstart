@@ -17,14 +17,22 @@ Deploy the cluster level Kubernetes resources required for the Entando operator 
 
    - for Openshift 3.11:
 
-     `oc apply -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/cluster-resources.yaml`
+```
+oc apply -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/cluster-resources.yaml
+```
+
    - for Openshift 4.x please use the [Operator Hub](https://link.to.oh.tutorial)
    - for Kubernetes clusters version 1.16 and later:
 
-     `kubectl apply -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-116-and-later/namespace-scoped-deployment/cluster-resources.yaml`
+```
+kubectl apply -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-116-and-later/namespace-scoped-deployment/cluster-resources.yaml
+```
+
    - for Kubernetes clusters before version 1.16 (deprecated):
 
-     `kubectl apply -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/cluster-resources.yaml`
+```
+kubectl apply -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/cluster-resources.yaml
+```
 
 ## 2. Install the Entando Operator
 
@@ -32,25 +40,37 @@ Deploy the namespace level Kubernetes resources required for the Entando operato
 
    - for Openshift 3.11:
 
-     `oc apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/namespace-resources.yaml`
+```
+oc apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/namespace-resources.yaml
+```
+
    - for Openshift 4.x please use the [Operator Hub](https://link.to.oh.tutorial)
    - for Kubernetes clusters version 1.16 and later:
 
-     `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-116-and-later/namespace-scoped-deployment/namespace-resources.yaml`
+```
+kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-116-and-later/namespace-scoped-deployment/namespace-resources.yaml
+```
+
    - for Kubernetes clusters before version 1.16 (deprecated):
 
-     `kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/namespace-resources.yaml`
+```
+kubectl apply -n [your-sandbox-namespace] -f https://raw.githubusercontent.com/entando-k8s/entando-k8s-operator-bundle/v6.3.2/manifests/k8s-before-116/namespace-scoped-deployment/namespace-resources.yaml
+```
 
 ## 3. Configure the Entando Operator (optional)
    
 The Entando Operator can be configured by modifying the values of properties in the entando-operator-config ConfigMap that can be created in the same namespace as the operator which would be [your-sandbox-namespace]. You can create it from the sample available in sample-configmaps/entando-operator-config.yaml, e.g.:
-      
-      `kubectl apply -f sample-configmaps/entando-operator-config.yaml -n [your-sandbox-namespace]`
-   
+
+```
+kubectl apply -f sample-configmaps/entando-operator-config.yaml -n [your-sandbox-namespace]
+```
+
 You can edit the configmap in your local text editor using the 'edit' command e.g.:
-   
-      `kubectl edit configmap entando-operator-config -n [you-sandbox-namespace]`
-   
+
+```
+kubectl edit configmap entando-operator-config -n [you-sandbox-namespace]
+```
+
 Please consult the comments in the sample-configmaps/entando-operator-config.yaml file for more details on common 
 configuration options.
 
@@ -66,12 +86,18 @@ Process the template and deploy the output using your favorite Kubernetes client
 
    *helm 2:*
 
-   `helm template --namespace [you-sandbox-namespace] --name=quickstart  ./ | kubectl apply -n [your-sandbox-namespace] -f -`
+```
+helm template --namespace [you-sandbox-namespace] --name=quickstart  ./ | kubectl apply -n [your-sandbox-namespace] -f -
+```
 
    *helm 3:*
 
-   `helm template quickstart ./ | kubectl apply -n [your-sandbox-namespace] -f -`
+```
+helm template quickstart ./ | kubectl apply -n [your-sandbox-namespace] -f -
+```
 
 Follow the progress of the Entando app deployment process using
 
-     `watch kubectl get pods -n [your-sandbox-namespace]`
+```
+watch kubectl get pods -n [your-sandbox-namespace]
+```
