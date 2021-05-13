@@ -11,7 +11,7 @@ This quickstart uses Entando's standard Wildfly image.
 
 # Steps to deploy to Openshift/Kubernetes
 
-## 1. Install the cluster-lever resources
+## 1. Install the cluster-level resources
 
 Deploy the cluster level Kubernetes resources required for the Entando operator from the entando-k8s-operator-bundle project. In order to achieve this, you would need cluster wide read/write access on CustomResourceDefinitions and ClusterRoles. If you are using a shared cluster, we highly recommend letting your Kubernetes administrator perform this task. Please never delete these resources when you have active Entando installations in your cluster as the cascading delete will delete all of your Entando deployments.
 
